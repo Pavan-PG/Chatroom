@@ -1,3 +1,1 @@
-A Pen created at CodePen.io. You can find this one at http://codepen.io/m412c0/pen/Fybpf.
-
- Inspired by http://dribbble.com/shots/975425-Flat-UI-login
+Chatroom application is built to demonstrate socket programming and how people can chat using the same port and with different messages sent at the same time.
