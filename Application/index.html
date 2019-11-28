@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Group Message!</title>
+    <link rel="stylesheet" type="text/css" href="signstyle.css">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="jquery-1.3.2.js" type="text/javascript"></script>
+    <script src="scroll-startstop.events.jquery.js" type="text/javascript"></script>
+    <style>
+        .mainbar {
+            height: 100%;
+        }
+
+        #formSubmit {
+            padding: 3px;
+            top: 36%;
+            left: 62%;
+            position: fixed;
+            margin: auto;
+            width: 30%;
+            background: white;
+            border-radius: 5%;
+            padding: 20px;
+            height: 200px;
+        }
+
+        #chatApp {
+            display: none;
+            padding: 3px;
+            top: 40%;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav style="background-color: black;">
+        <div class="nav-wrapper">
+            <p class="brand-logo center" id="nav-title" style="font-size: 33px;">Welcome to group messaging website</p>
+            <!-- <button class="brand-logo right" onclick="logout();" style="background-color: black; border-color: black; border-radius: 100% ">  -->
+            <a>
+                <span class="glyphicon glyphicon-log-out" id="logoutbutton"></span>
+            </a>
+            <!-- </button> -->
+            <ul id="nav-mobile" class="left hide-on-med-and-down">
+                <li>
+                    <span href="#" data-target="slide-out" class="sidenav-trigger" style="cursor:pointer; background-color: black;">
+                        <i class="material-icons">menu</i>
+                    </span>
+                </li>
+            </ul>
+            <p class=right id="user_display" style="font-family: Arial, Helvetica, sans-serif; font-size: 20px;margin-top: -5px; margin-right: 5px; ">Group Messenger</p>
+            <img src="welcome.png" width=50 height="50" class=right id="img_display" style="border-radius: 100%; margin-right: 10px; position: relative;"
+            />
+        </div>
+    </nav>
+
+    <ul id="slide-out" class="sidenav">
+        <li>
+            <div class="user-view">
+                <div class="background">
+                    <img src="profileback.jpg">
+                </div>
+                <a id="profilepic"></a>
+                <a class="white-text name" id="baab"></a>
+                <br>
+
+            </div>
+        </li>
+
+        <li>
+            <a href="#!">
+                <i class="material-icons">group</i>Online Users</a>
+        </li>
+        <li>
+            <div class="divider"></div>
+        </li>
+        <li>
+            <ul id="OnlineUsers" class="collection">
+
+            </ul>
+        </li>
+    </ul>
+    <div class="login-wrap" id="userSubmission">
+        <div class="login-html">
+            <input id="tab-1" type="radio" name="tab" class="sign-in" checked>
+            <label for="tab-1" class="tab">Sign In</label>
+            <input id="tab-2" type="radio" name="tab" class="sign-up">
+            <label for="tab-2" class="tab">Sign Up</label>
+            <div class="login-form">
+                <div class="sign-in-htm container" id="">
+                    <div class="group">
+                        <label for="user" class="label">Username</label>
+                        <input id="userLoginName" type="text" pattern="[A-Za-z]" class="input form-control">
+                    </div>
+                    <div class="group">
+                        <label for="pass" class="label">Password</label>
+                        <input id="userLoginPass" type="password" class="input form-control" data-type="password">
+                    </div>
+                    <div class="group">
+                        <input id="check" type="checkbox" class="check" checked>
+                        <label for="check">
+                            <span class="icon"></span> Keep me Signed in</label>
+                    </div>
+                    <div class="group">
+                        <input type="submit" id="userLoginForm" class="button" value="Sign In">
+                    </div>
+                    <div class="foot-lnk">
+                       <a href="http://localhost:80" style="margin-left: -20px;">Forgot Password?</a>
+                    </div>
+                    <br>
+                    <p id="logotext" style="color:white; text-align: left; margin-left: -20px;">Welcome, Please provide your credentials! </p>
+                </div>
+                <form>
+                <div class="sign-up-htm">
+                    <div class="group">
+                        <label for="user" class="label">Username</label>
+                        <input id="usersignupName" type="text" class="input form-control" required>
+                    </div>
+                    <div class="group">
+                        <label for="pass" class="label">Password</label>
+                       
+                        <input id="usersignupPass" type="password"  class="input form-control" data-type="password" required>
+                    </div>
+                     <div class="group">
+                        <label for="user" class="label">Mail ID</label>
+                        <input id="usersignupmail" type="text" class="input form-control">
+                    </div>
+                    <div class="group">
+                        <label class="label" style="color: white;">Enter your desired username and Password</label>
+                    </div>
+                    <div class="group brand-logo center">
+                        <input type="submit" id="usersignupForm" class="button" value="Sign Up">
+                    </div>
+                    <div class="foot-lnk">
+                        <label for="tab-1" style="margin-left: -20px;">Already Member?</a>
+                    </div>
+                    <br>
+                    <p id="signuptext" style="color:white; text-align: left; margin-left: -20px;">Hello there nice to see you!</p>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="content">
+        <div class="row" id="chatApp">
+            <div class="col s12 mainbar">
+                <div>
+                    <ul id="chatWindow" style="width: 60%;">
+                    </ul>
+                </div>
+                <form id="formSubmit">
+                    <!-- <label for="">Enters Message </label>
+                        <input name="" id="message" cols="30" rows="10" class="form-control" /><br />
+                         -->
+                    <div class="form-item" style="top:240px; left:860px; position: fixed;">
+                        <p style="color:black; position: relative;">
+                            <b>*Provide image source url to attach an image</b>
+                            <br>
+                            <b>or youtube embed link to attach youtube video in the message.</b>
+                        </p>
+                        <br>
+                        <label class="form-item__label" for="input" style="color: black; font-size: 20px;">
+                            <h2>
+                                <b>Enter the message</b>
+                            </h2>
+                        </label>
+                        <br>
+                        <input id="input" type="text" style="width:100%;">
+                        <br>
+                        <input type="submit" value="Send message" class="btn btn-primary" style="margin-top:10px;" />
+                    </div>
+                </form>
+                <input type="submit" value="Send Image" class="btn btn-primary" id="image_send" style="top:371px; left:1015px; position: fixed;"
+                />
+                <input type="submit" value="YE" class="btn btn-primary" id="yurl_send" style="top:371px; left:1148px; position: fixed;" />
+                <p id="activemembers" style="position: fixed; top:450px; left:850px; color: white; font-size: 20px;"></p> 
+            </div>
+        </div>
+    </div>
+
+    <script>
+        M.AutoInit();
+    </script>
+
+    <script>
+
+
+        // $(".container").remove();
+        // document.write("<div id='userSubmission' class='container' style=background-image: url(https://images.pexels.com/photos/953214/pexels-photo-953214.jpeg?auto=compress&cs=tinysrgb&h=350);>");
+        //     document.Write("<form id='userLoginForm'>");
+        //         document.write("<label style='color: black;'><b>Name</b></label>");
+        //         document.write("<input type='text' class='form-control' placeholder='Enter your Name' id='userLoginName'/>");
+        //         document.write("<br/>");
+        //         document.write("<label style='color: black;'><b>Password</b></label>");
+        //         document.write("<input type='password' class='form-control' placeholder='Enter your password' id='userLoginPass'/>");
+        //        document.write("<br/>"); 
+        //         document.write("<input type='submit' value='Login' class='btn btn-primary'>");
+        //         document.write("<input type='submit' value='Signup' class='btn btn-primary'>");
+        //     document.write("</form></div>");
+    </script>
+    <script>
+        var dict = {
+            "#OMG": "Oh My God!",
+            "#ROFL": "Rolling on floor laughing!",
+            "#STFU": "Shut the freak up!",
+            "#LMK": "Let me know!",
+            "#ILY": "I Love you!",
+            "#YOLO": "You only live once!",
+            "#SMH": "Shaking my head!",
+            "#LMFAO": "Laughing my freaking at off!",
+            "#NVM": "Never mind!",
+            "#IKR": "I know right!",
+            "#OFC": "Of Course!",
+            "#IDK": "I don't Know!",
+            "#LOL": "Laugh out loud!!"
+        };
+        console.log(dict);
+        $(function () {
+            var socket = io.connect();
+            $("#logoutbutton").click(function () {
+                 location.reload();
+            });
+            var $message = $('#input');
+            var $chatWindow = $('#chatWindow');
+            var $chatApp = $('#chatApp');
+            var $formSubmit = $('#formSubmit');
+            var $userSubmission = $('#userSubmission');
+            var $userLoginForm = $('#userLoginForm');
+            var $userLoginName = $('#userLoginName');
+            var $userLoginPass = $("#userLoginPass");
+            var $userSignupName = $("#usersignupName");
+            var $imagesend = $("#image_send");
+            var $yurlsend = $("#yurl_send");
+            var $userSignupPass = $("#usersignupPass");
+            var $OnlineUsers = $('#OnlineUsers');
+            var $radioValue = Math.ceil(Math.random() * 5);
+            var $room = 2000;
+            var $baab = $('#baab');
+            var $color = ['red', 'pink', 'purple', 'indigo', 'blue', 'teal', 'lime'];
+            var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            var $profilepic = $('#profilepic');
+            var $user = $('#user');
+            var $name = $('#name');
+            var $userSignupform = $("#usersignupForm");
+            var $acmem = $("#activemembers");
+            var num;
+            var $usersignupMail = $("#usersignupmail");
+            //console.log(''+$userLoginName.val());
+            $baab.html('' + $userLoginName.val());
+
+            $profilepic.html('<img class="circle" src="' + $radioValue + '.png">');
+            console.log($radioValue);
+
+            socket.on('connect', function () {
+                // Connected, let's sign-up for to receive messages for this room
+                socket.emit('room', $room);
+            });
+            //             $("#signup").click(function(){
+            //                 var $name=$("#userLoginName");
+            //         var $pass=$("#userLoginPass");
+            //         var $nameval=$name.val();
+            //         var $passval=$pass.val();
+            //         console.log($name.val());
+            //         console.log($pass.val());
+            //         socket.on('connectdb',function(results){
+            //             
+            //      
+
+            //       else{
+            //             socket.emit('addrecord',$nameval,$passval);
+            //             socket.on('serveraddrecord',function(status){
+            //                 $("#logotext").html(''+status);
+            //                 console.log("Reached client new record!");
+            //             })
+            //         }
+            //   }
+            //         })
+            //         });
+
+            $formSubmit.submit(function (e) {
+                time = new Date();
+                var flag = 1;
+                min = time.getMinutes();
+                hrs = time.getHours();
+                day = time.getDay();
+                e.preventDefault();
+                var $elem = $('#content');
+                $('html, body').animate({
+                    scrollTop: $elem.height()
+                }, 800);
+                console.log($radioValue);
+                for (var key in dict) {
+                    if (key == $message.val()) {
+                        socket.emit('send message', dict[key], $userLoginName.val(), $radioValue,num, function(useno){
+                            $acmem.html('Active members : '+useno);
+                        });
+                        flag = 0;
+                    }
+                }
+                if (flag) {
+                    socket.emit('send message', $message.val(), $userLoginName.val(), $radioValue,num,function(useno){
+                        $acmem.html('Active members : '+useno);
+                    });
+                }
+
+
+
+
+                //             $chatWindow.append(' <ul class="collection"> \
+                //                 <li class="collection-item ">\
+                //                 <div class="row valign-wrapper"> \
+                //                 <div class="col s1"> \
+                //                 <img src="'+$radioValue+'.png" class="circle responsive-img " /> \
+                //                 </div> \
+                //             <div class="col s11"> \
+                //        <strong class="'+$color[$radioValue]+'-text">\
+                //         ' + 'You' + '</strong> <span class="grey-text lighten-1">'+days[day]+' '+hrs+':'+min+'</span> <br />'+$message.val()+' \
+                //         </div> </div> \
+                //  </li>\
+                //   </ul>      ');
+                $message.val('');
+                $message.attr("placeholder", "Enter a message").placeholder();
+
+                // $("#input")
+
+
+            });
+            $imagesend.click(function (e) {
+                time = new Date();
+                min = time.getMinutes();
+                hrs = time.getHours();
+                day = time.getDay();
+                e.preventDefault();
+                var $elem = $('#content');
+                $('html, body').animate({
+                    scrollTop: $elem.height()
+                }, 800);
+                console.log($radioValue);
+                socket.emit('SendImage', $message.val(), $userLoginName.val(), $radioValue, num, function(useno){
+                    $acmem.html('Active members : '+useno);
+                });
+                $message.val('');
+                $message.attr("placeholder", "Enter a message").placeholder();
+            });
+            $yurlsend.click(function (e) {
+                time = new Date();
+                min = time.getMinutes();
+                hrs = time.getHours();
+                day = time.getDay();
+                e.preventDefault();
+                var $elem = $('#content');
+                $('html, body').animate({
+                    scrollTop: $elem.height()
+                }, 800);
+                console.log($radioValue);
+                socket.emit('URLy', $message.val(), $userLoginName.val(), $radioValue,num,function(useno){
+                    $acmem.html('Active members : '+useno);
+                });
+                $message.val('');
+                $message.attr("placeholder", "Enter a message").placeholder();
+            });
+
+            socket.on('server message', function (data) {
+                time = new Date();
+                min = time.getMinutes();
+                hrs = time.getHours();
+                day = time.getDay();
+
+                $chatWindow.append(
+                    '<ul class="collection"> \
+                        <li class="collection-item ">\
+                        <div class="row valign-wrapper"> \
+                        <div class="col s1" > \
+                        <img src="' +
+                    data.avatar +
+                    '.png" class="circle responsive-img " /> \
+                        </div> \
+                    <div class="col s11"> \
+               <strong class="' +
+                    $color[data.avatar] + '-text">\
+                ' + data.sender +
+                    '</strong> <span class="grey-text lighten-1">' + days[day] + ' ' + hrs + ':' +
+                    min + '</span> <br />' + data.msg +
+                    ' \
+                </div> </div> \
+         </li>\
+          </ul>');
+            });
+            socket.on('server_image_send', function (data) {
+                time = new Date();
+                min = time.getMinutes();
+                hrs = time.getHours();
+                day = time.getDay();
+
+                $chatWindow.append(
+                    '<ul class="collection"> \
+                        <li class="collection-item ">\
+                        <div class="row valign-wrapper"> \
+                        <div class="col s1" > \
+                        <img src="' +
+                    data.avatar +
+                    '.png" class="circle responsive-img " /> \
+                        </div> \
+                    <div class="col s11"> \
+               <strong class="' +
+                    $color[data.avatar] + '-text">\
+                ' + data.sender +
+                    '</strong> <span class="grey-text lighten-1">' + days[day] + ' ' + hrs + ':' +
+                    min + '</span> <br /><img src="' + data.msg +
+                    '" width=50% height=50% /> \
+                </div> </div> \
+         </li>\
+          </ul>'
+                );
+            });
+            socket.on('server_url_send', function (data) {
+                time = new Date();
+                min = time.getMinutes();
+                hrs = time.getHours();
+                day = time.getDay();
+
+                $chatWindow.append(
+                    '<ul class="collection"> \
+                        <li class="collection-item ">\
+                        <div class="row valign-wrapper"> \
+                        <div class="col s1" > \
+                        <img src="' +
+                    data.avatar +
+                    '.png" class="circle responsive-img " /> \
+                        </div> \
+                    <div class="col s11"> \
+               <strong class="' +
+                    $color[data.avatar] + '-text">\
+                ' + data.sender +
+                    '</strong> <span class="grey-text lighten-1">' + days[day] + ' ' + hrs + ':' +
+                    min + '</span> <br /><iframe width=400 height=200 src="' + data.msg +
+                    '">\
+                 </iframe></div></div></li></ul>');
+            });
+
+            $userLoginForm.click(function (e) {
+                e.preventDefault();
+                var UN=$userLoginName.val();
+                    socket.emit('user_login', $userLoginName.val(), $userLoginPass.val(), function (data,useno) {
+                        console.log(data);
+                        if (data) {
+                            // $userLoginName.val(' ');
+                            // alert("Login Successful");
+                            var x = document.getElementById("particles-js").disabled;
+                            $baab.append($userLoginName.val());
+                            $userSubmission.hide();
+                            $chatApp.show();
+                            $("#particles-js").hide();
+                            $("#img_display").attr("src", '/' + $radioValue + '.png');
+                            $("#user_display").html($userLoginName.val());
+                            $("#nav-title").attr({
+                                "class": "brand-logo left",
+                                "style": "font-size:26px; margin-left:60px; word-spacing: 2px;"
+                            });
+
+                            $("#nav-title").html('Welcome ' + UN + ' your chat window has arrived!');
+                        } else {
+                            $("#logotext").html("*Invalid Credentials!");
+                        }
+                    });
+            });
+            socket.on('restrict', function(data){
+                $("#logotext").html(data);
+            });
+
+            
+            $userSignupform.click(function (e) {
+                e.preventDefault();
+                var flag=1;
+                var email=$usersignupMail.val();
+                 console.log(email);
+                var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+            //var address = document.getElementById[email].value;
+            if (reg.test(email) == false) 
+            {
+                document.getElementById("signuptext").innerHTML="Please enter a proper mail ID. Example : someone@email.com";
+                flag=0;
+            }
+             if($userSignupPass.val()=="")
+            {
+                document.getElementById("signuptext").innerHTML="Password field is missing!"; 
+                flag=0;
+            }
+            if(flag){
+                socket.emit('newdb user', $userSignupName.val(), $userSignupPass.val(),$usersignupMail.val(), function (data) {
+                    if (data) {
+                        $("#signuptext").html("*Details recorded successfully!");
+                    } else {
+                        $("#signuptext").html("*Credentials already present");
+                    }
+                });
+            }
+            });
+            socket.on('restrictReg', function(data){
+                $("#signuptext").html(data);
+            });
+            
+            socket.on('get users', function (data) {
+                var htm = '';
+                $OnlineUsers.empty();
+
+                for (var i = 0; i < data.length; i++) {
+                    // htm += data[i];
+                    // $OnlineUsers.append('<p>'+data[i]+'</p>');
+
+                    $OnlineUsers.append(
+                        '<li class="collection-item"> \
+                                                 <a class="waves-effect"> \
+                                                         <div class="chip waves-effect"> \
+                                                             ' +
+                        data[i][0] + data[i][1] +
+                        ' \
+                                                         </div> \
+                                                         ' +
+                        data[i] +
+                        ' \
+                                                     </a> \
+                                                 </li> \
+                                              '
+                    );
+                }
+                // $OnlineUsers.html =  htm;
+                console.log(data);
+            });
+
+            // $userLoginForm.submit(function (e) {
+            //     e.preventDefault();
+            //     socket.emit('new user', $userLoginName.val(), function (data) {
+            //         if (data) {
+            //             $userLoginName.val(' ');
+
+            //             $userSubmission.hide();
+            //             $chatApp.show();
+            //         }
+            //     });
+
+            // });
+
+
+            // socket.on('get user', function (data) {
+            //     var htm = '';
+            //     for (var i = 0; i < data.length; i++) {
+            //         htm += data[i];
+            //     }
+            //     $OnlineUsers.html = htm;
+            // });
+
+        });
+    </script>
+    <!-- <script src="demo_dbconnect.js"></script>-->
+
+    <div id="particles-js"></div>
+    <script type="text/javascript" src="particles.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+</body>
+
+</html>
